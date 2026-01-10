@@ -16,9 +16,9 @@ class TestCookiePrint(BaseCase):
         return cookies_dict
 
     def test_cookie_check(self):
-        recieved_cookies = self.test_print_coockie()
+        received_cookies = self.test_print_coockie()
         response2 = requests.get("https://playground.learnqa.ru/api/homework_cookie")
-        for self.expected_cookie in recieved_cookies:
+        for self.expected_cookie in received_cookies:
             received_value = self.get_cookie(response2, self.expected_cookie)
             assert received_value == self.expected_cookie_value, f"There is no expected cookie value {self.expected_cookie_value}"
             #print(f" The check is OK. There is a cookie named '{self.expected_cookie}' with value '{received_value}'")
