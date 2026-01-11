@@ -107,11 +107,8 @@ class TestUserDelete(BaseCase):
 
         # DELETE
 
-        not_own_user_id_as_int = int(self.user_id) - 1
-        not_own_user_id_as_str = str(not_own_user_id_as_int)
-
         response3 = MyRequests.delete(
-            f"/user/{not_own_user_id_as_str}",
+            f"/user/10",
             headers={"x-csrf-token": self.token},
             cookies={"auth_sid": self.auth_sid}
         )

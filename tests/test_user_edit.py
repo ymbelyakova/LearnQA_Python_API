@@ -32,7 +32,7 @@ class TestUserEdit(BaseCase):
 
 
     # Успешное изменение имени пользователя
-    def test_edit_just_created_user(self):
+    def test_edit_just_created_user_successfully(self):
 
 
         # EDIT
@@ -61,11 +61,11 @@ class TestUserEdit(BaseCase):
         )
 
     # Неуспешная попытка изменить имя пользователя, будучи неавторизованным
-    def test_edit_just_created_user_without_authorization(self):
+    def test_edit_just_created_user_without_authorization_negative(self):
 
 
         # EDIT
-        new_name = "Changed Name"
+        new_name = "Unauthorized Changed Name"
         response3 = MyRequests.put(
             f"/user/{self.user_id}",
             data={"firstName": new_name}
@@ -80,17 +80,14 @@ class TestUserEdit(BaseCase):
         )
 
     # Неуспешная попытка изменить имя пользователя, будучи авторизованным другим пользователем
-    def test_edit_not_own_user(self):
+    def test_edit_not_own_user_negative(self):
 
 
         # EDIT
-        new_name = "Changed Name"
-
-        not_own_user_id_as_int = int(self.user_id) - 1
-        not_own_user_id_as_str = str(not_own_user_id_as_int)
+        new_name = "Not Own Changed Name"
 
         response3 = MyRequests.put(
-            f"/user/{not_own_user_id_as_str}",
+            f"/user/10",
             headers = {"x-csrf-token": self.token},
             cookies = {"auth_sid": self.auth_sid},
             data={"firstName": new_name}
