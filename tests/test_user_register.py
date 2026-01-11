@@ -42,22 +42,22 @@ class TestUserRegister(BaseCase):
         assert response.content.decode("utf-8") == f"Invalid email format", f"Unexpected response content: {response.content}"
 
     # Пользователь не зарегистрирован, т. к. длина имени <2 символов
-    def test_create_user_with_invalid_short_username(self):
+    def test_create_user_with_invalid_short_name(self):
         data = self.prepare_registration_data()
         name = ''.join(choices(string.ascii_letters, k=1))
-        data['username'] = name
+        data['firstName'] = name
         response = MyRequests.post("/user/", data=data)
         Assertions.assert_code_status(response, 400)
-        assert response.content.decode("utf-8") == f"The value of 'username' field is too short", f"Unexpected response content: {response.content}"
+        assert response.content.decode("utf-8") == f"The value of 'firstName' field is too short", f"Unexpected response content: {response.content}"
 
     # Пользователь не зарегистрирован, т. к. длина имени >250 символов
-    def test_create_user_with_invalid_long_username(self):
+    def test_create_user_with_invalid_long_name(self):
         data = self.prepare_registration_data()
         name = ''.join(choices(string.ascii_letters, k=251))
-        data['username'] = name
+        data['firstName'] = name
         response = MyRequests.post("/user/", data=data)
         Assertions.assert_code_status(response, 400)
-        assert response.content.decode("utf-8") == f"The value of 'username' field is too long", f"Unexpected response content: {response.content}"
+        assert response.content.decode("utf-8") == f"The value of 'firstName' field is too long", f"Unexpected response content: {response.content}"
 
     # Пользователь не зарегистрирован, т. к. не передан один из необходимых параметров
     @pytest.mark.parametrize('condition', required_params)
