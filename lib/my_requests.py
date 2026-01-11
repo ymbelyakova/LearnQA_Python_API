@@ -30,8 +30,8 @@ class MyRequests():
     @staticmethod
     def _send (url: str, data: dict, headers: dict, cookies: dict, method: str):
 
-        #url = f"{ENV_OBJECT.get_base_url()}{url}"
-        url = f"https://playground.learnqa.ru/api{url}"
+        url = f"{ENV_OBJECT.get_base_url()}{url}"
+        #url = f"https://playground.learnqa.ru/api{url}"
 
         if headers is None:
             headers = {}

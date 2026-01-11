@@ -85,8 +85,12 @@ class TestUserEdit(BaseCase):
 
         # EDIT
         new_name = "Changed Name"
+
+        not_own_user_id_as_int = int(self.user_id) - 1
+        not_own_user_id_as_str = str(not_own_user_id_as_int)
+
         response3 = MyRequests.put(
-            f"/user/10",
+            f"/user/{not_own_user_id_as_str}",
             headers = {"x-csrf-token": self.token},
             cookies = {"auth_sid": self.auth_sid},
             data={"firstName": new_name}

@@ -4,3 +4,4 @@ __pycache__/
 temp/*
 logs/*
 test_results/*
+homework/*
