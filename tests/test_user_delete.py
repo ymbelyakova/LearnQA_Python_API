@@ -1,7 +1,11 @@
 from lib.assertions import Assertions
 from lib.base_case import BaseCase
 from lib.my_requests import MyRequests
+import allure
+import pytest
 
+@allure.epic("LearnQA user tests")
+@allure.feature("Delete user tests")
 class TestUserDelete(BaseCase):
 
     def setup_method(self):
@@ -27,11 +31,18 @@ class TestUserDelete(BaseCase):
 
         response2 = MyRequests.post("/user/login", data=login_data)
 
+        Assertions.assert_code_status(response1, 200)
+
         self.auth_sid = self.get_cookie(response2, "auth_sid")
         self.token = self.get_header(response2, "x-csrf-token")
 
 
     # Успешное удаление нового созданного пользователя
+    @pytest.mark.smoke
+    @pytest.mark.regression
+    @allure.story("Successful delete of own user")
+    @allure.description("Successful delete of own user")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_user_delete_successfully(self):
 
         # DELETE
@@ -64,6 +75,10 @@ class TestUserDelete(BaseCase):
 
 
     # Невозможно удалить пользователя с id<=5
+    @pytest.mark.regression
+    @allure.story("Fail to delete reserved own user")
+    @allure.description("Fail to delete reserved own user with id <=5")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_user_delete_undeletable_user_negative(self):
         # LOGIN
         login_data = {
@@ -103,6 +118,11 @@ class TestUserDelete(BaseCase):
         Assertions.assert_json_has_keys(response3, expected_fields)
 
     # Невозможно удалить пользователя будучи авторизованным другим пользователем
+    @pytest.mark.smoke
+    @pytest.mark.regression
+    @allure.story("Fail to delete not own user")
+    @allure.description("Fail to delete not own user")
+    @allure.severity(allure.severity_level.BLOCKER)
     def test_user_delete_not_own_user_negative(self):
 
         # DELETE

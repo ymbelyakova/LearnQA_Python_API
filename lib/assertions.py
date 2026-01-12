@@ -1,8 +1,10 @@
 from requests import Response
 import json
+import allure
 
 class Assertions:
     @staticmethod
+    @allure.step("Check given key value is in json response")
     def assert_json_value_by_name(response: Response, name, expected_value, error_massage):
         try:
             response_as_dict = response.json()
@@ -14,6 +16,7 @@ class Assertions:
         assert response_as_dict[name] == expected_value, error_massage
 
     @staticmethod
+    @allure.step("Check given keys are in json response")
     def assert_json_has_keys(response: Response, keys:list):
         try:
             response_as_dict = response.json()
@@ -25,6 +28,7 @@ class Assertions:
             assert key in response_as_dict, f"Response JSON doesn't have key '{key}'"
 
     @staticmethod
+    @allure.step("Check given key is not in json response")
     def assert_json_has_no_key(response: Response, key):
         try:
             response_as_dict = response.json()
@@ -35,6 +39,7 @@ class Assertions:
         assert key not in response_as_dict, f"Response JSON shouldn't have '{key}', but it's present."
 
     @staticmethod
+    @allure.step("Check given key is in json response")
     def assert_json_has_key(response: Response, key):
         try:
             response_as_dict = response.json()
@@ -45,6 +50,7 @@ class Assertions:
         assert key in response_as_dict, f"Response JSON doesn't have key '{key}'"
 
     @staticmethod
+    @allure.step("Check expected status code is received in response")
     def assert_code_status(response: Response, expected_status_code):
         assert response.status_code == expected_status_code, \
             f"Unexpected status code. Expected: {expected_status_code} Actual: {response.status_code}"

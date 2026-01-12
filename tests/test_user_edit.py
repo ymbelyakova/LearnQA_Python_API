@@ -1,8 +1,11 @@
-import requests
+import pytest
 from lib.assertions import Assertions
 from lib.base_case import BaseCase
 from lib.my_requests import MyRequests
+import allure
 
+@allure.epic("LearnQA user tests")
+@allure.feature("Update user tests")
 class TestUserEdit(BaseCase):
     def setup_method(self):
         # REGISTER
@@ -27,11 +30,18 @@ class TestUserEdit(BaseCase):
 
         response2 = MyRequests.post("/user/login", data=login_data)
 
+        Assertions.assert_code_status(response1, 200)
+
         self.auth_sid = self.get_cookie(response2, "auth_sid")
         self.token = self.get_header(response2, "x-csrf-token")
 
 
     # Успешное изменение имени пользователя
+    @pytest.mark.smoke
+    @pytest.mark.regression
+    @allure.story("Successful change of user info for own user")
+    @allure.description("Successful change of user info for own user: first name is changed")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_edit_just_created_user_successfully(self):
 
 
@@ -61,6 +71,11 @@ class TestUserEdit(BaseCase):
         )
 
     # Неуспешная попытка изменить имя пользователя, будучи неавторизованным
+    @pytest.mark.smoke
+    @pytest.mark.regression
+    @allure.story("Fail to change user info without the authorization")
+    @allure.description("Fail to change user first name without the authorization: no token and auth_sid were provided")
+    @allure.severity(allure.severity_level.BLOCKER)
     def test_edit_just_created_user_without_authorization_negative(self):
 
 
@@ -80,6 +95,11 @@ class TestUserEdit(BaseCase):
         )
 
     # Неуспешная попытка изменить имя пользователя, будучи авторизованным другим пользователем
+    @pytest.mark.smoke
+    @pytest.mark.regression
+    @allure.story("Fail to change user info of not own user")
+    @allure.description("Fail to change first name of not own user")
+    @allure.severity(allure.severity_level.BLOCKER)
     def test_edit_not_own_user_negative(self):
 
 
@@ -102,6 +122,10 @@ class TestUserEdit(BaseCase):
         )
 
     # Неуспешная попытка изменить email пользователя на некорректный - без @
+    @pytest.mark.regression
+    @allure.story("Fail to change user email with incorrect one")
+    @allure.description("Fail to change user email with incorrect one: @ is missing")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_edit_user_email_with_no_at_negative(self):
 
         # EDIT
@@ -122,6 +146,10 @@ class TestUserEdit(BaseCase):
         )
 
     # Неуспешная попытка изменить firstName пользователя короткое <2символов
+    @pytest.mark.regression
+    @allure.story("Fail to change user info for too short")
+    @allure.description("Fail to change user first name for too short <2 symbols")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_edit_user_too_short_first_name_negative(self):
         # EDIT
         new_name = "F"

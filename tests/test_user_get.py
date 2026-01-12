@@ -1,10 +1,19 @@
 from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
+import allure
+import pytest
 
+@allure.epic("LearnQA user tests")
+@allure.feature("Get user info tests")
 class TestUserGet(BaseCase):
 
     # При неавторизованном запросе о пользователе получаем только его username
+    @pytest.mark.regression
+    @allure.story("Provide just username in case of unauthorized request")
+    @allure.description("Returns just username in case of unauthorized request")
+    @allure.severity(allure.severity_level.NORMAL)
+    #@allure.title("Get username in case of unauthorized request")
     def test_get_user_details_not_auth(self):
         response = MyRequests.get("/user/2")
         Assertions.assert_code_status(response, 200)
@@ -15,6 +24,11 @@ class TestUserGet(BaseCase):
         Assertions.assert_json_has_no_key(response, "lastName")
 
     # При авторизованном запросе о своем пользователе получаем всю ожидаемую информацию
+    @pytest.mark.regression
+    @allure.story("Provide all info about own user in case of successful login")
+    @allure.description("Return all info about own user in case of successful login")
+    @allure.severity(allure.severity_level.CRITICAL)
+    #@allure.title("Return info about own user in case of successful login")
     def test_get_user_details_auth_as_same_user(self):
         data = {
             'email': 'vinkotov@example.com',
@@ -39,6 +53,11 @@ class TestUserGet(BaseCase):
         Assertions.assert_json_has_no_key(response2, "password")
 
     # При авторизованном запросе о другом пользователе получаем только его username
+    @pytest.mark.regression
+    @allure.story("Provide just username of not own user in case of successful login")
+    @allure.description("Returns just username of not own user own user in case of successful login")
+    @allure.severity(allure.severity_level.NORMAL)
+    #@allure.title("Returns just username of not own user in case of successful login")
     def test_get_user_details_auth_as_another_user(self):
         data = {
             'email': 'vinkotov@example.com',

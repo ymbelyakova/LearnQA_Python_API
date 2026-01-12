@@ -4,8 +4,10 @@ from lib.assertions import Assertions
 from random import choices
 import string
 import pytest
+import allure
 
-
+@allure.epic("LearnQA user tests")
+@allure.feature("Register user tests")
 class TestUserRegister(BaseCase):
     required_params = [
         ("email"),
@@ -17,6 +19,11 @@ class TestUserRegister(BaseCase):
 
 
     # Успешная регистрация пользователя
+    @pytest.mark.smoke
+    @pytest.mark.regression
+    @allure.story("Successful user registration")
+    @allure.description("Successful user registration of a new user with all required params and unique email")
+    @allure.severity(allure.severity_level.BLOCKER)
     def test_create_user_successfully(self):
         data = self.prepare_registration_data()
         response = MyRequests.post("/user/", data=data)
@@ -25,6 +32,11 @@ class TestUserRegister(BaseCase):
 
 
     # Пользователь не зарегистрирован, т. к. email уже существует
+    @pytest.mark.smoke
+    @pytest.mark.regression
+    @allure.story("Fail to register user because email is already taken")
+    @allure.description("Fail to register user because email is already taken by another user")
+    @allure.severity(allure.severity_level.BLOCKER)
     def test_create_user_with_existing_email(self):
         email = 'vinkotov@example.com'
         data = self.prepare_registration_data(email)
@@ -34,6 +46,10 @@ class TestUserRegister(BaseCase):
         assert response.content.decode("utf-8") == f"Users with email '{email}' already exists", f"Unexpected response content: {response.content}"
 
     # Пользователь не зарегистрирован, т. к. email невалиден - нет @
+    @pytest.mark.regression
+    @allure.story("Fail to register user because of invalid emai")
+    @allure.description("Fail to register user because of invalid emai - @ is missing")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_create_user_with_invalid_email(self):
         email = 'learnqa_no_at_example.com'
         data = self.prepare_registration_data(email)
@@ -42,6 +58,10 @@ class TestUserRegister(BaseCase):
         assert response.content.decode("utf-8") == f"Invalid email format", f"Unexpected response content: {response.content}"
 
     # Пользователь не зарегистрирован, т. к. длина имени <2 символов
+    @pytest.mark.regression
+    @allure.story("Fail to register user with short fist name")
+    @allure.description("Fail to register user with too short fist name <2 symbols")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_create_user_with_invalid_short_name(self):
         data = self.prepare_registration_data()
         name = ''.join(choices(string.ascii_letters, k=1))
@@ -51,6 +71,10 @@ class TestUserRegister(BaseCase):
         assert response.content.decode("utf-8") == f"The value of 'firstName' field is too short", f"Unexpected response content: {response.content}"
 
     # Пользователь не зарегистрирован, т. к. длина имени >250 символов
+    @pytest.mark.regression
+    @allure.story("Fail to register user with long fist name")
+    @allure.description("Fail to register user with too long fist name >250 symbols")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_create_user_with_invalid_long_name(self):
         data = self.prepare_registration_data()
         name = ''.join(choices(string.ascii_letters, k=251))
@@ -60,6 +84,11 @@ class TestUserRegister(BaseCase):
         assert response.content.decode("utf-8") == f"The value of 'firstName' field is too long", f"Unexpected response content: {response.content}"
 
     # Пользователь не зарегистрирован, т. к. не передан один из необходимых параметров
+    @pytest.mark.smoke
+    @pytest.mark.regression
+    @allure.story("Fail to register user without required parameter")
+    @allure.description("Fail to register user without any of required parameters")
+    @allure.severity(allure.severity_level.BLOCKER)
     @pytest.mark.parametrize('condition', required_params)
     def test_negative_create_user(self, condition):
         data = self.prepare_registration_data()

@@ -4,13 +4,17 @@ from lib.assertions import Assertions
 from lib.my_requests import MyRequests
 import allure
 
-@allure.epic("Authorization tests")
+@allure.epic("LearnQA user tests")
+@allure.feature("Authorize user tests")
+
 class TestUserAuth(BaseCase):
     exclude_params = [
         ("no_cookie"),
         ("no_token")
     ]
 
+
+    @allure.description("User login and receiving user_id, token and auth_sid")
     def setup_method(self):
         data = {'email': 'vinkotov@example.com', 'password': '1234'}
         response1 = MyRequests.post("/user/login", data=data)
@@ -19,8 +23,12 @@ class TestUserAuth(BaseCase):
         self.token = self.get_header(response1, "x-csrf-token")
         self.user_id_from_auth_method = self.get_json_value(response1, "user_id")
 
-
+    # Логин существующим пользователем, которого нельзя удалить
+    @pytest.mark.smoke
+    @pytest.mark.regression
+    @allure.story("Successful login with existing user")
     @allure.description("This test successfully authorizes user by email and password")
+    @allure.severity(allure.severity_level.BLOCKER)
     def test_user_auth(self):
 
         response2 = MyRequests.get(
@@ -36,7 +44,12 @@ class TestUserAuth(BaseCase):
             "User id from auth method is not equal to user id from check method"
         )
 
+    # Неуспешная авторизация без куки или токена
+    @pytest.mark.smoke
+    @pytest.mark.regression
+    @allure.story("Authorization error if no cookie or token was sent")
     @allure.description("This test doesn't authorize user without send cookie or token")
+    @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('condition', exclude_params)
     def test_negative_auth_check(self, condition):
 
